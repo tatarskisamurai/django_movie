@@ -1,7 +1,17 @@
+from pydoc import describe
 from django.contrib import admin
 import django.core.asgi
 from django.utils.safestring import mark_safe
 from .models import Actor, Category, Genre, Movie, MovieShots, Rating, RatingStar, Reviews
+from django import forms
+from django.contrib import admin
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+
+class MovieAdminForm(forms.ModelForm):
+    description = forms.CharField(label='Описание', widget=CKEditorUploadingWidget ())
+    class Meta:
+        model = Movie
+        fields = '__all__'
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -35,6 +45,7 @@ class MovieAdmin(admin.ModelAdmin):
    save_as = True
    readonly_fields = ('get_image',)
    list_editable = ('draft',)
+   form = MovieAdminForm
    fieldsets = (
       ("Основная информация", {
          "fields": (('title', 'tagline'),)
