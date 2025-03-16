@@ -76,7 +76,7 @@ class MovieAdmin(admin.ModelAdmin):
         return "Нет изображения"
    
     def unpublish(self, request, queryset):
-        row_update = queryset.update(draft=True)
+        row_update = queryset.update(draft=False)
         if row_update == 1:
             message_bit = '1 запись была обновлена'
         else:
@@ -84,7 +84,7 @@ class MovieAdmin(admin.ModelAdmin):
         self.message_user(request, f'{message_bit}')
 
     def publish(self, request, queryset):
-        row_update = queryset.update(draft=False)
+        row_update = queryset.update(draft=True)
         if row_update == 1:
             message_bit = '1 запись была обновлена'
         else:
