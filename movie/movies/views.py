@@ -20,6 +20,7 @@ class MoviesView(GenreYear, ListView):
    '''Список фильмов'''
    model = Movie
    queryset = Movie.objects.filter(draft=True)
+   paginate_by = 1
 
 class MovieDetailView(GenreYear, DetailView):
     '''Полное описание фильма'''
@@ -69,22 +70,28 @@ class ActorView(GenreYear, DetailView):
 
 class FilterMoviesView(GenreYear, ListView):
     """Фильтр фильмов"""
+    paginate_by = 1
+
     def get_queryset(self):
-      years = self.request.GET.getlist("year")
-      genres = self.request.GET.getlist("genre")
+        queryset = Movie.objects.filter(
+            Q(year__in=self.request.GET.getlist("year")) |
+            Q(genres__in=self.request.GET.getlist("genre"))
+        ).distinct()
+        return queryset
 
-      queryset = Movie.objects.all()
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["year"] = ''.join([f"year={x}&" for x in self.request.GET.getlist("year")])
+        context["genre"] = ''.join([f"genre={x}&" for x in self.request.GET.getlist("genre")])
+        return context
 
-      if years:
-         queryset = queryset.filter(year__in=years)
 
-      if genres:
-         queryset = queryset.filter(genres__in=genres)
 
-      return queryset.distinct()
+
     
 class JsonFilterMoviesView(ListView):
     """Фильтр фильмов в json"""
+
     def get_queryset(self):
         queryset = Movie.objects.filter(
             Q(year__in=self.request.GET.getlist("year")) |
@@ -95,6 +102,7 @@ class JsonFilterMoviesView(ListView):
     def get(self, request, *args, **kwargs):
         queryset = list(self.get_queryset())
         return JsonResponse({"movies": queryset}, safe=False)
+
     
 class AddStarRating(View):
     """Добавление рейтинга фильму"""
