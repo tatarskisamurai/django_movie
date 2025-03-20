@@ -7,15 +7,17 @@ from .models import Actor, Category, Genre, Movie, MovieShots, Rating, RatingSta
 from django import forms
 from django.contrib import admin
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from modeltranslation.admin import TranslationAdmin
 
 class MovieAdminForm(forms.ModelForm):
-    description = forms.CharField(label='Описание', widget=CKEditorUploadingWidget ())
+    description_ru = forms.CharField(label="Описание", widget=CKEditorUploadingWidget())
+    description_en = forms.CharField(label="Описание", widget=CKEditorUploadingWidget())
     class Meta:
         model = Movie
         fields = '__all__'
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(TranslationAdmin):
     list_display = ('id', 'name', 'url')
     list_display_links = ('name',)
 
@@ -37,7 +39,7 @@ class MovieShotsInline(admin.TabularInline):
     get_image.short_description = 'Изображение'
 
 @admin.register(Movie)
-class MovieAdmin(admin.ModelAdmin):
+class MovieAdmin(TranslationAdmin):
     list_display = ('title', 'category', 'url', 'draft')
     list_filter = ('year', 'category')
     search_fields = ('title', 'category__name')
@@ -105,7 +107,7 @@ class ReviewsAdmin(admin.ModelAdmin):
     readonly_fields = ('name', 'email')
 
 @admin.register(Actor)
-class ActorAdmin(admin.ModelAdmin):
+class ActorAdmin(TranslationAdmin):
     list_display = ('name', 'age', 'image')
     readonly_fields = ("get_image",)
 
@@ -118,13 +120,13 @@ class ActorAdmin(admin.ModelAdmin):
    
 
 @admin.register(Genre)
-class GenreAdmin(admin.ModelAdmin):
+class GenreAdmin(TranslationAdmin):
     list_display = ('name', 'url')
     list_display_links = ('name',)
     search_fields = ('name',)
     
 @admin.register(MovieShots)
-class MovieShotsAdmin(admin.ModelAdmin):
+class MovieShotsAdmin(TranslationAdmin):
     list_display = ('title', 'movie', 'get_image')
     list_display_links = ('title',)
     search_fields = ('title', 'movie__title')
