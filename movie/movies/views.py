@@ -42,6 +42,7 @@ class MovieDetailView(GenreYear, DetailView):
         # Создаём форму с начальными данными
         initial_data = {'star': user_rating.star.id} if user_rating else {}
         context['star_form'] = RatingForm(initial=initial_data)
+        context["form"] = ReviewForm()
         
         return context
 
